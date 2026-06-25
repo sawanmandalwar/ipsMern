@@ -39,23 +39,23 @@ console.log("MONGODB_URL =", process.env.MONGODB_URL);
 app.get("/", (req, res) => {
     res.send("Backend Running");
 });
-mongoose.connect(process.env.MONGODB_URL)
-.then(() => {
-    console.log('Database connected');
-
-    app.listen(PORT, () => {
-        console.log('Server running on port', PORT);
-    });
-})
-.catch((err) => {
-    console.error('Database connection error:', err);
-});
 // mongoose.connect(process.env.MONGODB_URL)
 // .then(() => {
-//     console.log("Database connected");
+//     console.log('Database connected');
+
+//     app.listen(PORT, () => {
+//         console.log('Server running on port', PORT);
+//     });
 // })
 // .catch((err) => {
-//     console.error("Database connection error:", err);
+//     console.error('Database connection error:', err);
 // });
+mongoose.connect(process.env.MONGODB_URL)
+.then(() => {
+    console.log("Database connected");
+})
+.catch((err) => {
+    console.error("Database connection error:", err);
+});
 
-// module.exports = app;
+module.exports = app;

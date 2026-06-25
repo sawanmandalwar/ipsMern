@@ -7,7 +7,7 @@ const ProductSchema = new Schema({
   pname: { type: String, required: true },
   pprice: { type: Number, required: true },
   oprice: { type: Number, required: true },
-  ppicname: { type: String },
+  picname: { type: String },
   pcatgid: { type: Number },
   vid: { type: Number },
   status: { type: String, default: "Inactive" },

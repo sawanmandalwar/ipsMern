@@ -55,7 +55,8 @@ venderRoute.post("/register", async (req, res) => {
 
     const vender = new Vender({ ...req.body, Vid: newVid });
     await vender.save();
-    sendGMail(vender.VEmail);
+  
+    // sendGMail(vender.VEmail);
     res.send("Registration Successful");
   } catch (err) {
     console.error(err);
@@ -76,7 +77,6 @@ venderRoute.post("/login", async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 });
-
 // ===================
 // Get All Vendors
 // ===================
@@ -88,7 +88,6 @@ venderRoute.get("/getvendercount", async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 });
-
 // ===================
 // Toggle Vendor Status
 // ===================
@@ -110,39 +109,84 @@ venderRoute.put("/vendermanage/:vid/:status", async (req, res) => {
 // ===================
 // Update Vendor Profile (with Cloudinary upload)
 // ===================
+// venderRoute.put("/update/:VUserId", async (req, res) => {
+//   try {
+//     const VUserId = req.params.VUserId;
+//     const vendor = await Vender.findOne({ VUserId });
+//     if (!vendor) return res.status(404).send("Vendor not found");
+
+//     // Multer will NOT handle files unless we add upload.single("file") middleware
+//     const uploadMiddleware = upload.single("file");
+
+//     uploadMiddleware(req, res, async (err) => {
+//       if (err) {
+//         console.error("Multer/Cloudinary error:", err);
+//         return res.status(500).send("File upload failed");
+//       }
+
+//       const updatedData = {
+//         VenderName: req.body.VenderName || vendor.VenderName,
+//         VAddress: req.body.VAddress || vendor.VAddress,
+//         VContact: req.body.VContact || vendor.VContact,
+//         VEmail: req.body.VEmail || vendor.VEmail,
+//         VPicName: req.file ? req.file.path : vendor.VPicName, // Cloudinary image URL
+//       };
+
+//       await Vender.updateOne({ VUserId }, { $set: updatedData });
+
+//       res.send({
+//         message: "Profile updated successfully",
+//         updatedData,
+//       });
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Error updating profile");
+//   }
+// });
 venderRoute.put("/update/:VUserId", async (req, res) => {
+  console.log("UPDATE ROUTE HIT");
+
   try {
     const VUserId = req.params.VUserId;
-    const vendor = await Vender.findOne({ VUserId });
-    if (!vendor) return res.status(404).send("Vendor not found");
+    console.log("VUserId =", VUserId);
 
-    // Multer will NOT handle files unless we add upload.single("file") middleware
+    const vendor = await Vender.findOne({ VUserId });
+
+    console.log("Vendor Found =", vendor);
+
+    if (!vendor) {
+      return res.status(404).send("Vendor not found");
+    }
+
     const uploadMiddleware = upload.single("file");
 
     uploadMiddleware(req, res, async (err) => {
       if (err) {
-        console.error("Multer/Cloudinary error:", err);
-        return res.status(500).send("File upload failed");
+        console.log("UPLOAD ERROR =", err);
+        return res.status(500).send(err.message);
       }
 
+      console.log("FILE =", req.file);
+
       const updatedData = {
-        VenderName: req.body.VenderName || vendor.VenderName,
-        VAddress: req.body.VAddress || vendor.VAddress,
-        VContact: req.body.VContact || vendor.VContact,
-        VEmail: req.body.VEmail || vendor.VEmail,
-        VPicName: req.file ? req.file.path : vendor.VPicName, // Cloudinary image URL
+        VPicName: req.file ? req.file.path : vendor.VPicName,
       };
 
-      await Vender.updateOne({ VUserId }, { $set: updatedData });
+      await Vender.updateOne(
+        { VUserId },
+        { $set: updatedData }
+      );
 
       res.send({
         message: "Profile updated successfully",
         updatedData,
       });
     });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error updating profile");
+    console.error("UPDATE ROUTE ERROR =", err);
+    res.status(500).send(err.message);
   }
 });
 /* =====================================================

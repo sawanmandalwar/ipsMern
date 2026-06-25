@@ -1,3 +1,8 @@
+require('dotenv').config();
+
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -30,13 +35,27 @@ app.use("/sales", saleRoute);
 app.use("/paymentdetails",paymentdetailsRoute);
 app.use("/payment",paymentRoute);
 
-require('dotenv').config();
+console.log("MONGODB_URL =", process.env.MONGODB_URL);
+app.get("/", (req, res) => {
+    res.send("Backend Running");
+});
+// mongoose.connect(process.env.MONGODB_URL)
+// .then(() => {
+//     console.log('Database connected');
 
-mongoose.connect(process.env.MONGODB_URL).then(
-    () => {console.log('Database is connected'+process.env.MONGODB_URL) },
-    err => { console.log('Can not connect to the database'+ err)}
-  );
-  
-  app.listen(PORT, ()=>{
-    console.log('Server is running on Port:',PORT);
-  });
+//     app.listen(PORT, () => {
+//         console.log('Server running on port', PORT);
+//     });
+// })
+// .catch((err) => {
+//     console.error('Database connection error:', err);
+// });
+mongoose.connect(process.env.MONGODB_URL)
+.then(() => {
+    console.log("Database connected");
+})
+.catch((err) => {
+    console.error("Database connection error:", err);
+});
+
+module.exports = app;
